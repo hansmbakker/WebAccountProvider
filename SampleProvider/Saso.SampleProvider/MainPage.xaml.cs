@@ -1,6 +1,4 @@
-﻿#define BEFOREREMOVE 
-
-
+﻿
 using Saso.SampleProviders.Helpers;
 using System;
 using System.Collections.Generic;
@@ -93,16 +91,6 @@ namespace Saso.SampleProvider
 
             await PopulateAccounts(); 
 
-
-#if JAIMEREMOVE 
-            var taskAccounts = WebAccountManager.FindAllProviderWebAccountsAsync().AsTask<IReadOnlyList<WebAccount>>();
-            taskAccounts.Wait();
-            var accounts = taskAccounts.Result;
-            foreach ( WebAccount account  in accounts )
-            {
-                WebAccountManager.DeleteWebAccountAsync(account); 
-            }
-#endif
         }
 
 
@@ -129,7 +117,7 @@ namespace Saso.SampleProvider
         }
 
 
-        public void SetValue ( Provider p )
+        public void SetProviderUI ( Provider p )
         {            
             WebAccountProvider.Text = p.Id;
             Scope.Text = p.Scope ?? "" ;
@@ -152,7 +140,7 @@ namespace Saso.SampleProvider
 
                 if (targetWebAccountProvider != null)
                 {
-                    SetValue(targetProvider);
+                    SetProviderUI(targetProvider);
                     currentWebAccountProvider = targetWebAccountProvider; 
                 } 
                 else
@@ -160,35 +148,7 @@ namespace Saso.SampleProvider
                     ProvidersComboBox.SelectedIndex = -1;
                     DebugPrint("Error: The provider was not found in this system"); 
                 }
-            }
-                
-
-#if JAIMEREMOVE
-            if (Provider != null)
-            {
-                switch (Provider.SelectedIndex)
-                {
-                    case 0:
-                        SetValue("", "", "");
-                        break;
-                    case 1:
-                        SetValue(MSAProviderId, MSAScope, MSAClientId);
-                        break;
-                    case 2:
-                        SetValue(AADProviderId, AADScope, AADDomainJoinedClientId);
-                        break;
-                    case 3:
-                        SetValue(AADProviderId, AADScope, AADCDJClientId);
-                        break;
-                    case 4:
-                        SetValue("https://www.contoso.com", "read_stream", "204023626294934");
-                        break;
-                    case 5:
-                        SetValue("", "", "");
-                        break;
-                }
-            }
-#endif
+            }           
         }
 
         private void RequestTokenAsync_Click(object sender, RoutedEventArgs e)
@@ -232,9 +192,7 @@ namespace Saso.SampleProvider
         private void AccountControl_Click(object sender, RoutedEventArgs e)
         {
             ((Button)sender).IsEnabled = false;
-
             // TODO: move the callback registration to OnNavigatedTo            
-
             try
             {
                 if (!_isCallbackRegistered)
@@ -263,8 +221,7 @@ namespace Saso.SampleProvider
             // This scenario only lets the user have one account at a time.
             // If there already is an account, we do not include a provider in the list
             // This will prevent the add account button from showing up.
-
-            
+ 
             if (HasAccountStored())
             {
                 await AddWebAccountToPane(e);
@@ -279,7 +236,6 @@ namespace Saso.SampleProvider
 
         private async Task AddWebAccountProvidersToPane(AccountsSettingsPaneCommandsRequestedEventArgs e)
         {
-           //  string[] providerIds = new string[] { MSAProviderId, AADProviderId, ContosoProviderId };
             try
             {
                 foreach (var provider in Provider.All)
@@ -302,7 +258,6 @@ namespace Saso.SampleProvider
         private async Task AddWebAccountToPane(AccountsSettingsPaneCommandsRequestedEventArgs e)
         {
 
-#if BEFOREREMOVE 
             var taskAccounts = WebAccountManager.FindAllProviderWebAccountsAsync().AsTask<IReadOnlyList<WebAccount>>();
             taskAccounts.Wait();
             var accounts = taskAccounts.Result;
@@ -311,18 +266,6 @@ namespace Saso.SampleProvider
                 WebAccountCommand command = new WebAccountCommand(account, WebAccountCommandInvoked, SupportedWebAccountActions.Remove);
                 e.WebAccountCommands.Add(command);
             }
-
-#else
-            Debug.Assert (false , "TODO: implement using AccountManager"); 
-            WebAccount account = await GetWebAccount();
-
-            if (account != null)
-            {
-                WebAccountCommand command = new WebAccountCommand(account, WebAccountCommandInvoked, SupportedWebAccountActions.Remove);
-                e.WebAccountCommands.Add(command);
-            }
-
-#endif 
         }
 
         private async Task<WebAccount> GetWebAccount()
@@ -378,19 +321,6 @@ namespace Saso.SampleProvider
                     clientId = p.ClientId; 
                 }
             }
-
-#if JAIMEREMOVE
-            if (provider.Id == MSAProviderId)
-            {
-                scope = MSAScope;
-                clientId = MSAClientId;
-            }
-            else
-            {
-                scope = AADScope;
-                clientId = AADCDJClientId;
-            }
-#endif
             await AuthenticateWithRequestToken(provider,  scope , clientId, "");
         }
 
@@ -412,71 +342,22 @@ namespace Saso.SampleProvider
                 {
                     Trace.LogException(ex); 
                 }
-#if JAIMEREMOVE
-                await LogoffAndRemoveAccount();
-#endif
 
             }
         }
 
-        public void StoreNewAccountDataLocally(WebAccount account)
-        {
-
-#if !JAIMEREMOVE 
-            Debug.Assert(false, "just checking if it gets called");
-#endif 
-
-            ApplicationData.Current.LocalSettings.Values[Constants.StoredAccountIdKey] = account.Id;
-            ApplicationData.Current.LocalSettings.Values[Constants.StoredProviderIdKey] = account.WebAccountProvider.Id;
-        }
+        
 
         private bool HasAccountStored()
         {
-
-#if BEFOREREMOVE
-            //var task = WebAuthenticationCoreManager.FindAccountProviderAsync(provider.Id).AsTask<WebAccountProvider>();
-            //task.Wait();
-            //WebAccountProvider provider = task.Result;
-
+            //TODO: should we get this from our local repo?   Not for a sample, but yes for real apps
             var taskAccounts = WebAccountManager.FindAllProviderWebAccountsAsync().AsTask<IReadOnlyList<WebAccount>>();
             taskAccounts.Wait();
             var accounts = taskAccounts.Result;
-            return accounts.Count > 0; 
-
-#endif
-
-            return AccountManager.Current.HasAccounts ; 
-#if JAIMEREMOVE
-            return (ApplicationData.Current.LocalSettings.Values.ContainsKey(Constants.StoredAccountIdKey) &&
-                    ApplicationData.Current.LocalSettings.Values.ContainsKey(Constants.StoredProviderIdKey));
-
-#endif
+            return accounts.Count > 0;  
         }
 
-        private async Task LogoffAndRemoveAccount()
-        {
-            try
-            {
-                if (HasAccountStored())
-                {
-                    WebAccount account = await GetWebAccount();
-
-                    // Check if the account has been deleted already 
-                    // from settings
-
-                    if (account != null)
-                    {
-                        await account.SignOutAsync();
-                    }
-                    account = null;
-                    RemoveAccountData();
-                }
-            }
-            catch (Exception ex)
-            {
-                DebugPrint("LogoffAndRemoveAccount exception: " + ex.Message);
-            }
-        }
+         
 
         private void AddRequestProperties(String RequestProperties, WebTokenRequest webTokenRequest)
         {
@@ -504,21 +385,6 @@ namespace Saso.SampleProvider
                                                         Provider,
                                                         Scope,
                                                         ClientID);
-
-#if JAIMEREMOVE
-                if (Provider.Id == AADProviderId ||
-                    (Provider.Id == MicrosoftProviderId && Provider.Authority == AADAuthority))
-                {
-                    //adding properties to the tokenrequest if the IDP plugin requires
-                    DebugPrint("Adding properties to TokenRequest");
-
-                    // For CDJ and DJ we registered the same resource: https://ngcteam.com
-                    webTokenRequest.Properties.Add("authority", "https://login.windows-ppe.net/common");
-                    webTokenRequest.Properties.Add("resource", "https://ngcteam.com");
-                }
-
-                AddRequestProperties(RequestProperties, webTokenRequest);
-#endif
                 DebugPrint("Call RequestTokenAsync");
                 WebTokenRequestResult webTokenRequestResult = await WebAuthenticationCoreManager.RequestTokenAsync(webTokenRequest);
                 HandleResult(webTokenRequestResult, true); // store returned account locally
@@ -575,23 +441,7 @@ namespace Saso.SampleProvider
                 //
                 // add properties to the tokenrequest if the IDP plugin requires
                 //
-#if JAIMEREMOVE
-                if (WebAccountProviderID == AADProviderId ||
-                    (WebAccountProviderID == MicrosoftProviderId && Authority == AADAuthority))
-                {
-                    DebugPrint("Adding properties to TokenRequest");
 
-                    // For CDJ and DJ we registered the same resource: https://ngcteam.com
-                    webTokenRequest.Properties.Add("authority", "https://login.windows-ppe.net/common");
-                    webTokenRequest.Properties.Add("resource", "https://ngcteam.com");
-                }
-
-                if (!String.IsNullOrEmpty(TokenBindingTarget))
-                {
-                    webTokenRequest.Properties.Add("exportEccKey", TokenBindingTarget);
-                    webTokenRequest.Properties.Add("exportRsaKey", TokenBindingTarget);
-                }
-#endif
                 AddRequestProperties(RequestProperties, webTokenRequest);
 
                 DebugPrint("Call RequestTokenAsync");
@@ -643,12 +493,7 @@ namespace Saso.SampleProvider
 
                     string picStreamSize = string.Format("---WebAccount picture stream size is: {0}", picStream.Size);
                     DebugPrint(picStreamSize);
-
-                    if (storeAccount)
-                    {
-                        StoreNewAccountDataLocally(account);
-                        DebugPrint("Now App stores this account locally. You can manage this account.");
-                    }
+              
                 }
                 else
                 {
@@ -666,7 +511,6 @@ namespace Saso.SampleProvider
         {
             switch (webTokenRequestResult.ResponseStatus)
             {
-
                 case WebTokenRequestStatus.Success:
 
                     DebugPrint("RequestTokenAsync succeeds");
@@ -679,7 +523,6 @@ namespace Saso.SampleProvider
                     {
                         DebugPrint("Exeption during ResponseData: " + ex.Message);
                     }
-
                     break;
 
 
@@ -744,7 +587,6 @@ namespace Saso.SampleProvider
         {
             try
             {
-
                 //
                 //create webTokenRequest with ProviderID, Scope, ClientId
                 //
@@ -778,21 +620,6 @@ namespace Saso.SampleProvider
                 DebugPrint("Adding properties to TokenRequest");
                 webTokenRequest.Properties.Add("facebook_properties", "additional_properties");
 
-#if JAIMEREMOVE
-                if (WebAccountProviderID == "https://login.windows.net" ||
-                    (WebAccountProviderID == MicrosoftProviderId && Authority == AADAuthority))
-                {
-                    // For CDJ and DJ we registered the same resource: https://ngcteam.com
-                    webTokenRequest.Properties.Add("authority", "https://login.windows-ppe.net/common");
-                    webTokenRequest.Properties.Add("resource", "https://ngcteam.com");
-                }
-
-                if (!String.IsNullOrEmpty(TokenBindingTarget))
-                {
-                    webTokenRequest.Properties.Add("exportEccKey", TokenBindingTarget);
-                    webTokenRequest.Properties.Add("exportRsaKey", TokenBindingTarget);
-                }
-#endif
                 AddRequestProperties(RequestProperties, webTokenRequest);
 
                 DebugPrint("Call GetTokenSilently");
@@ -842,25 +669,7 @@ namespace Saso.SampleProvider
             else
                 DebugPrint("Error: You must first select a provider");             
         }
-
-        void SetCookieManually ()
-        {
-            // HttpCookie adIdCookie = CookieManager.GetAdIdCookie();
-            var cookie = CookieManager.MakeCookie("testmanual", CookieManager.GetDomain(Constants.ProviderId), Constants.DefaultCookiePath, DateTime.Now.ToString());
-            cookie.Value = "UpdatedManually";
-            HttpBaseProtocolFilter filter = new HttpBaseProtocolFilter();
-
-            var cookieManager = filter.CookieManager;
-
-            try
-            {
-                cookieManager.SetCookie(cookie);
-            } catch ( Exception ex )
-            {
-                Trace.LogException(ex); 
-            }
-            
-        }
+ 
         private async void PushCookies_Click(object sender, RoutedEventArgs e)
         {            
             List<HttpCookie> cookies = new List<HttpCookie>();
@@ -874,17 +683,12 @@ namespace Saso.SampleProvider
             try
             {  
                 await WebAccountManager.PushCookiesAsync( new Uri (currentWebAccountProvider.Id) , cookies);
-                DebugPrint("Cookie added"); 
+                DebugPrint("Cookie(s) added"); 
             }
             catch ( Exception ex )
             {
                 DebugPrint($"Error: {ex.Message}\n{ex.StackTrace}"); 
             }
-
-#if DEBUG
-            GetCookies_Click(null, null);  
-#endif 
-
         }
 
         private async void GetCookies_Click(object sender, RoutedEventArgs e)

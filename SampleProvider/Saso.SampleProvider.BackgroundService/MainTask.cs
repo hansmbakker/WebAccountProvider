@@ -66,13 +66,12 @@ namespace Saso.SampleProvider.BackgroundService
                         WebAccountProviderGetTokenSilentOperation getTokenOperation = operation as WebAccountProviderGetTokenSilentOperation;
                         WebProviderTokenRequest providerRequest = getTokenOperation.ProviderRequest;
 
-                        //
-                        // just contruct an "echo" response to indicated that plug-in got it
-                        //
+                        
                         string scope = (String.IsNullOrEmpty(providerRequest.ClientRequest.Scope) ? "empty scope" : providerRequest.ClientRequest.Scope);
                         WebAccount account = (providerRequest.WebAccounts.Count > 0 ? providerRequest.WebAccounts[0] : null);
                         if (account == null)
                         {
+                            //TODO: this sample requires an account.  Not all samples have to do that, we did it for illustrative purposes 
                             getTokenOperation.ReportUserInteractionRequired(); 
                             // getTokenOperation.ReportError(new WebProviderError((uint)Constants.ErrorCodes.AccountRequired, Constants.AccountRequired));
                             break;
@@ -157,56 +156,16 @@ namespace Saso.SampleProvider.BackgroundService
                         // to set the cookies (e.g. during user logon or request processing)
                         //
                      
-                        try
-                        {
-                            WebAccountManager.PullCookiesAsync(Constants.ProviderId, Package.Current.Id.FamilyName);
-                        }
-                        catch ( Exception ex )
-                        {
-                            Trace.LogException(ex); 
-                        }
+                         
 
-                        try
-                        {
-                            WebAccountManager.PullCookiesAsync(CookieManager.GetDomain(Constants.ProviderId), Package.Current.Id.FamilyName);
-                        }
-                        catch (Exception ex)
-                        {
-                            Trace.LogException(ex);
-                        }
-
-                        bool hasAdId = false;
-                        bool hasTime = false;                         
-                        foreach ( var cookie in cookiesOperation.Cookies )
-                        {
-                            if (cookie.Name == Constants.AdvertiserIdCookieKey)
-                            {
-                                hasAdId = true;
-                            }
-                            else if (cookie.Name == Constants.DebugCookieKey)
-                            {                          
-                                cookie.Value = DateTime.Now.ToString();
-                                hasTime = true;  
-                            } 
-                            Debug.WriteLine($"{cookie.Name}:  {cookie.Value}. Expires on {cookie.Expires.ToString()} "); 
-                        }
-
-                        if ( !hasAdId )
-                        {
-                            cookiesOperation.Cookies.Add(CookieManager.GetAdIdCookie( )) ; 
-                        }
-                        if ( !hasTime )
-                        {
-                            cookiesOperation.Cookies.Add(CookieManager.MakeCookie ( Constants.DebugCookieKey, CookieManager.GetDomain ( Constants.ProviderId), Constants.DefaultCookiePath,
-                                  Uri.EscapeUriString (DateTime.Now.ToString() + "- from Service")));
-                        }
-                        
-
+                          //Append two cookies for testing purposes.. 
+                         cookiesOperation.Cookies.Add(CookieManager.GetAdIdCookie( )) ; 
+                         cookiesOperation.Cookies.Add(CookieManager.MakeCookie ( Constants.DebugCookieKey, CookieManager.GetDomain ( Constants.ProviderId), Constants.DefaultCookiePath,
+                                  Uri.EscapeUriString (DateTime.Now.ToString())));
+                         
                         if (cookiesOperation.Uri == null)
                             cookiesOperation.Uri = new Uri(Constants.ProviderId); 
-
-                     
-                    
+                       
                         try
                         {
                             var roList = new List <HttpCookie>(cookiesOperation.Cookies); 
@@ -226,7 +185,7 @@ namespace Saso.SampleProvider.BackgroundService
             }
             catch (Exception e)
             {
-                //Utils.SaveLastSilentOperationString(Utils.GetExceptionDisplayText(e));
+                
 
                 if (null != operation)
                 {
