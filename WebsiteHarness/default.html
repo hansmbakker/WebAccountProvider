@@ -1,0 +1,59 @@
+﻿
+<!doctype html>  
+<html lang="en">  
+  <head>  
+      <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+      <META HTTP-EQUIV="Expires" CONTENT="-1">
+    <meta charset="utf-8">  
+    <title>TBAuth test page</title>  
+    
+<script>  
+
+    var siteName = "paxwaptest.azurewebsites.net"; 
+
+function noHandler () 
+{ 
+alert ('no handler') ; 
+} 
+function onSuccess () 
+{ 
+   alert('success:' + document.cookie ); 
+} 
+
+function submitCookies()  
+{  
+    
+    var cookietext = document.getElementById('cookietext').value ; 
+    var uri = "tbauth://" + siteName + "?context=https://" +  siteName + "&" + cookietext;  
+    if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)
+    {
+        window.location = uri; 
+    }
+    else
+    {
+        navigator.msLaunchUri(uri, onSuccess, noHandler);
+    }        
+}  
+
+function init () 
+{ 
+    document.getElementById('existing').innerHTML = document.cookie;
+    document.getElementById('lastRefreshed').innerHTML = Date(); 
+} 
+
+</script> 
+
+  </head>  
+  <body onload='init();' >  
+    
+Existing cookies: <div id='existing'> </div> <br /> 
+
+Enter your cookie here! 
+<input id="cookietext" type="text" value="user=jaimer" /> <br /> 
+<input type="button" value="submit"  onclick="submitCookies();" /> 
+
+      <br /><br /><br />
+ <div id="lastRefreshed" /> 
+  </body>  
+</html>  
+  

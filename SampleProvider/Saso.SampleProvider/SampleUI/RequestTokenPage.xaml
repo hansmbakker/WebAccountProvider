@@ -1,0 +1,111 @@
+﻿<Page
+    x:Class="Saso.SampleProvider.SampleUI.RequestTokenPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Saso.SampleProvider.SampleUI"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <Style TargetType="TextBlock" x:Key="promptLabel">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Margin" Value="10,2,10,2" />
+        </Style>
+
+        <Style TargetType="TextBlock" x:Key="promptLabelDisabled">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Margin" Value="10,2,10,2" />
+            <Setter Property="Foreground" Value="Gray" /> 
+        </Style>
+
+        <Style TargetType="TextBox" x:Key="textBox">
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="Margin" Value="10,2,10,10" />
+        </Style>
+
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="10,0" /> 
+        </Style>
+    </Page.Resources>
+
+    <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalScrollBarVisibility="Auto" >
+        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" VerticalAlignment="Center" Width="400">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="Sample Login Page" Style="{StaticResource  TitleTextBlockStyle}" /> 
+            
+            <TextBlock Text="username" Grid.Row="2" Style="{StaticResource promptLabel}"></TextBlock>
+            <TextBox x:Name="userName" Grid.Row="3" Style="{StaticResource textBox}"/>
+
+            <!--<TextBlock Text="password (enter same as username, that is all validation we do)" Grid.Row="6" Style="{StaticResource promptLabel}"></TextBlock>
+            <TextBox x:Name="password" Grid.Row="7" Style="{StaticResource textBox}"/>-->
+
+            <TextBlock Text="AccountId (defaults to username if not entered)" Grid.Row="8" Style="{StaticResource promptLabel}"></TextBlock>
+            <TextBox x:Name="accountId" Grid.Row="9" Style="{StaticResource textBox}"/>
+
+            <Rectangle Height="2" Fill="Gray" HorizontalAlignment="Stretch" Margin="30,0" Grid.Row="10" />
+            <TextBlock Text="Scope(can be per user, per app, or both)" Grid.Row="11" Style="{StaticResource promptLabel}"></TextBlock>
+            <StackPanel Grid.Row="11" Orientation="Horizontal" Margin="0,5">
+                <CheckBox x:Name="chkPerUserScope" Grid.Row="12" IsChecked="True" 
+                      Content="Per User (System-wide) Scope" 
+                      Margin="10,10,0,0"/>
+                
+                <CheckBox x:Name="chkPerUserPerAppScope"  IsChecked="False" 
+                      Content="Per App Scope" 
+                      Margin="10,10,0,0"/>
+                
+            </StackPanel>
+            
+
+            <TextBlock Text="Per User From App Account Id" Grid.Row="13" Style="{StaticResource promptLabelDisabled}" />
+            <TextBox x:Name="perUserPerAppId" Grid.Row="14" Style="{StaticResource textBox}" IsEnabled="{Binding ElementName=chkPerUserPerAppScope , 
+                Path=IsChecked, Mode=OneWay }"/>
+
+
+            <Rectangle Height="2" Fill="Gray" HorizontalAlignment="Stretch" Margin="30,0" Grid.Row="18" />
+            <CheckBox x:Name="chkFullView" Grid.Row="19" 
+                      Content="Give app full view of account data"  IsChecked="True"                     
+                      Margin="10,10,0,0"/>
+
+
+
+            <StackPanel Orientation="Horizontal" Grid.Row="23" HorizontalAlignment="Center" Margin="0,20,0,0">
+                <Button Content="Sign In" x:Name="submitButton" Click="submitButton_Click"/>
+                <Button Content="Cancel" x:Name="cancelButton" Click="cancelButton_Click"/>
+            </StackPanel>
+
+
+            <TextBlock Text="" x:Name="errorMessage" Grid.Row="26" Margin="10,30,0,0" Foreground="Red"/>
+        </Grid>
+    </ScrollViewer>
+</Page>
