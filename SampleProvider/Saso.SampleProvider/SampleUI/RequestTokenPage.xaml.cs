@@ -58,22 +58,34 @@ namespace Saso.SampleProvider.SampleUI
 
                     _requestedAccount = _operation.ProviderRequest.WebAccounts[0];
                     userName.Text = _requestedAccount.UserName;
-
-
+                    
                     WebAccount account = null;
                     account = await WebAccountManager.GetPerUserFromPerAppAccountAsync(_requestedAccount);
                     Debug.Assert(account != null);
+                    // TODO: You could return error if the account is not found. 
+                    // For the sample we let them add the account again. 
+                }
 
+                // This is a hack for demo purposes to show simplest UI 
+                if ( _operation.ProviderRequest.ClientRequest.Properties.Keys.Contains("UI"))
+                {
+                    string ui = _operation.ProviderRequest.ClientRequest.Properties["UI"]; 
+                    if (ui == "Simplest")
+                    {
+                        for (int x = 8; x < 20; x++)
+                            RootGrid.RowDefinitions[x].Height = new GridLength(0); 
+                    }
                 }
             }
         }
 
+
         private void RequestTokenPage_Loaded(object sender, RoutedEventArgs e)
         {
 
-            userName.Text = "jaime-user";
-            accountId.Text = "jaime-acct";
-            perUserPerAppId.Text = "jaime-pupa"; 
+            userName.Text = "userName";
+            accountId.Text = "accountId";
+            perUserPerAppId.Text = "appToUserId"; 
         }
 
 

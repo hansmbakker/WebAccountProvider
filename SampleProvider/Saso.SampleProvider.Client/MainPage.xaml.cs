@@ -30,11 +30,14 @@ namespace Saso.SampleProvider.Client
             this.InitializeComponent();
         }
 
-        private void DebugPrint (string s)
+        private void UpdateResults (string s)
         {
-
+            this.ResultsTextBox.Text += s; 
         }
-
+        private void ClearResults()  
+        { 
+            this.ResultsTextBox.Text = "" ; 
+        } 
         private async void Login_Click(object sender, RoutedEventArgs e)
         {
             await RetrieveToken(true); 
@@ -47,13 +50,13 @@ namespace Saso.SampleProvider.Client
 
         private async Task<bool> RetrieveToken (bool showUi)
         {
-
+            ClearResults(); 
             try
             {
                 var provider = await WebAuthenticationCoreManager.FindAccountProviderAsync(WebProviderId);
                 if (provider == null)
                 {
-                    DebugPrint($"Provider for {WebProviderId} is not installed. Please ensure it has been deployed");
+                    UpdateResults($"Provider for {WebProviderId} is not installed. Please ensure it has been deployed");
                     return false;
                 } 
 
@@ -63,6 +66,7 @@ namespace Saso.SampleProvider.Client
                                                         "all",
                                                         "", tokenType);
 
+                webTokenRequest.Properties.Add("UI", "Simplest"); 
 
                 WebTokenRequestResult webTokenRequestResult = null;
                 if (showUi)
@@ -74,35 +78,39 @@ namespace Saso.SampleProvider.Client
                 switch (webTokenRequestResult.ResponseStatus)
                 {
                     case WebTokenRequestStatus.Success:
-                        DebugPrint("Web Token retrieved successfully");
+                        UpdateResults("Web Token retrieved successfully\n");
+                        int count = 0; 
+                        foreach (var result in webTokenRequestResult.ResponseData)
+                        {
+                            UpdateResults($"Token {count++} = {result.Token} \n");
+                        } 
                         break;
                     case WebTokenRequestStatus.UserCancel:
-
                         // Handle user cancel by resuming pre-login screen 
-                        DebugPrint("User cancelled the authentication");
+                        UpdateResults("User cancelled the authentication");
                         break;
 
                     case WebTokenRequestStatus.AccountProviderNotAvailable:
 
                         // fall back to WebAuthenticationBroker  
-                        DebugPrint("WebTokenRequestStatus.AccountProviderNotAvailable");
+                        UpdateResults("WebTokenRequestStatus.AccountProviderNotAvailable");
                         break;
 
                     case WebTokenRequestStatus.ProviderError:
-                        DebugPrint(string.Format("Error: 0x{0:X08} message: {1}", webTokenRequestResult.ResponseError.ErrorCode, webTokenRequestResult.ResponseError.ErrorMessage));
+                        UpdateResults(string.Format("Error: 0x{0:X08} message: {1}", webTokenRequestResult.ResponseError.ErrorCode, webTokenRequestResult.ResponseError.ErrorMessage));
                         break;
 
                     case WebTokenRequestStatus.UserInteractionRequired:
-                        DebugPrint("WebTokenRequestStatus.UserInteractionRequired");
+                        UpdateResults("WebTokenRequestStatus.UserInteractionRequired");
 
                         if (webTokenRequestResult.ResponseError != null)
                         {
-                            DebugPrint(string.Format("Error: 0x{0:X08} message: {1}", webTokenRequestResult.ResponseError.ErrorCode, webTokenRequestResult.ResponseError.ErrorMessage));
+                            UpdateResults(string.Format("Error: 0x{0:X08} message: {1}", webTokenRequestResult.ResponseError.ErrorCode, webTokenRequestResult.ResponseError.ErrorMessage));
                         }
                         break;
 
                     default:
-                        DebugPrint("Unhandled webTokenRequestResult.ResponseStatus: " + webTokenRequestResult.ResponseStatus);
+                        UpdateResults("Unhandled webTokenRequestResult.ResponseStatus: " + webTokenRequestResult.ResponseStatus);
                         break;
                 }
             } catch (Exception ex )

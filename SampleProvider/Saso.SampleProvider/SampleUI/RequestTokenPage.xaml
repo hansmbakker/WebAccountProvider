@@ -30,7 +30,7 @@
     </Page.Resources>
 
     <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalScrollBarVisibility="Auto" >
-        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" VerticalAlignment="Center" Width="400">
+        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" VerticalAlignment="Center" Width="400" x:Name="RootGrid">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />

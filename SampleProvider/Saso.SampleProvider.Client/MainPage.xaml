@@ -6,21 +6,37 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Page.Resources>
+        <Style TargetType="Button" >
+            <Setter Property="Margin" Value="15,5" /> 
+            
+        </Style>
+    </Page.Resources>
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Padding="20,0">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" /> 
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="1" Orientation="Horizontal">
+        <TextBlock Text="Client for a Web Account Provider" Style="{StaticResource TitleTextBlockStyle}" Margin="0,20"/>
+        <TextBlock Text="This is simplest client for account provider. Just to show you how to invoke WAP and get a token. you can also call this with an account. The provider handles it." 
+                   
+                   Grid.Row="1"  TextWrapping="Wrap" Foreground="Gray"/> 
+        
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,30">
             <Button Content="Invoke Login UI" Click="Login_Click"/>
             <Button Content="Retrieve Token Silently" Click="RetrieveSilently_Click" /> 
         </StackPanel>
 
-        <TextBlock Text="Results" Grid.Row="2" />
-        <TextBox x:Name="ResultsTextBox" IsReadOnly="True" Grid.Row="3" MinHeight="200" /> 
+        <TextBlock Text="Results" Grid.Row="5" />
+        <TextBox x:Name="ResultsTextBox" IsReadOnly="True"  TextWrapping="Wrap"  
+                 Grid.Row="6" MinHeight="200" BorderBrush="Transparent" Background="Transparent" /> 
     </Grid>
 </Page>
