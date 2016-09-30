@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Security.Authentication.Web.Core;
@@ -36,50 +37,79 @@ namespace Saso.SampleProvider.Client
 
         private async void Login_Click(object sender, RoutedEventArgs e)
         {
-            var provider = await WebAuthenticationCoreManager.FindAccountProviderAsync(WebProviderId);
+            await RetrieveToken(true); 
+        }
 
-            WebTokenRequestPromptType tokenType = WebTokenRequestPromptType.Default;
-            WebTokenRequest webTokenRequest = new WebTokenRequest(
-                                                    provider,
-                                                    "all",
-                                                    "", tokenType);
-            var  webTokenRequestResult = await WebAuthenticationCoreManager.GetTokenSilentlyAsync(webTokenRequest);
+        private async void RetrieveSilently_Click(object sender, RoutedEventArgs e)
+        {
+            RetrieveToken(false); 
+        }
 
+        private async Task<bool> RetrieveToken (bool showUi)
+        {
 
-            switch (webTokenRequestResult.ResponseStatus)
+            try
             {
-                case WebTokenRequestStatus.Success:
-                    DebugPrint("Web Token retrieved successfully");                      
-                    break;
-                case WebTokenRequestStatus.UserCancel:
+                var provider = await WebAuthenticationCoreManager.FindAccountProviderAsync(WebProviderId);
+                if (provider == null)
+                {
+                    DebugPrint($"Provider for {WebProviderId} is not installed. Please ensure it has been deployed");
+                    return false;
+                } 
 
-                    // Handle user cancel by resuming pre-login screen 
-                    DebugPrint("User cancelled the authentication");
-                    break;
+                WebTokenRequestPromptType tokenType = WebTokenRequestPromptType.Default;
+                WebTokenRequest webTokenRequest = new WebTokenRequest(
+                                                        provider,
+                                                        "all",
+                                                        "", tokenType);
 
-                case WebTokenRequestStatus.AccountProviderNotAvailable:
 
-                    // fall back to WebAuthenticationBroker  
-                    DebugPrint("WebTokenRequestStatus.AccountProviderNotAvailable");
-                    break;
+                WebTokenRequestResult webTokenRequestResult = null;
+                if (showUi)
+                    webTokenRequestResult= await WebAuthenticationCoreManager.RequestTokenAsync(webTokenRequest);
+                else
+                    webTokenRequestResult = await WebAuthenticationCoreManager.GetTokenSilentlyAsync(webTokenRequest);
 
-                case WebTokenRequestStatus.ProviderError:
-                    DebugPrint(string.Format("Error: 0x{0:X08} message: {1}", webTokenRequestResult.ResponseError.ErrorCode, webTokenRequestResult.ResponseError.ErrorMessage));
-                    break;
 
-                case WebTokenRequestStatus.UserInteractionRequired:
-                    DebugPrint("WebTokenRequestStatus.UserInteractionRequired");
+                switch (webTokenRequestResult.ResponseStatus)
+                {
+                    case WebTokenRequestStatus.Success:
+                        DebugPrint("Web Token retrieved successfully");
+                        break;
+                    case WebTokenRequestStatus.UserCancel:
 
-                    if (webTokenRequestResult.ResponseError != null)
-                    {
+                        // Handle user cancel by resuming pre-login screen 
+                        DebugPrint("User cancelled the authentication");
+                        break;
+
+                    case WebTokenRequestStatus.AccountProviderNotAvailable:
+
+                        // fall back to WebAuthenticationBroker  
+                        DebugPrint("WebTokenRequestStatus.AccountProviderNotAvailable");
+                        break;
+
+                    case WebTokenRequestStatus.ProviderError:
                         DebugPrint(string.Format("Error: 0x{0:X08} message: {1}", webTokenRequestResult.ResponseError.ErrorCode, webTokenRequestResult.ResponseError.ErrorMessage));
-                    }
-                    break;
+                        break;
 
-                default:
-                    DebugPrint("Unhandled webTokenRequestResult.ResponseStatus: " + webTokenRequestResult.ResponseStatus);
-                    break;
+                    case WebTokenRequestStatus.UserInteractionRequired:
+                        DebugPrint("WebTokenRequestStatus.UserInteractionRequired");
+
+                        if (webTokenRequestResult.ResponseError != null)
+                        {
+                            DebugPrint(string.Format("Error: 0x{0:X08} message: {1}", webTokenRequestResult.ResponseError.ErrorCode, webTokenRequestResult.ResponseError.ErrorMessage));
+                        }
+                        break;
+
+                    default:
+                        DebugPrint("Unhandled webTokenRequestResult.ResponseStatus: " + webTokenRequestResult.ResponseStatus);
+                        break;
+                }
+            } catch (Exception ex )
+            {
+
             }
+            return false;  
         }
     }
 }

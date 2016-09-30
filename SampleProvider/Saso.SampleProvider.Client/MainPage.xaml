@@ -8,6 +8,19 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Button Content="Just Login" Click="Login_Click"/> 
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Button Content="Invoke Login UI" Click="Login_Click"/>
+            <Button Content="Retrieve Token Silently" Click="RetrieveSilently_Click" /> 
+        </StackPanel>
+
+        <TextBlock Text="Results" Grid.Row="2" />
+        <TextBox x:Name="ResultsTextBox" IsReadOnly="True" Grid.Row="3" MinHeight="200" /> 
     </Grid>
 </Page>
