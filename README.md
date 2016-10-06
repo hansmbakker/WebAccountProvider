@@ -19,7 +19,30 @@ Recently, I needed to share state between a website and an app, so I looked into
 
 - Official [WebAccountManager](https://github.com/Microsoft/Windows-universal-samples/tree/master/Samples/WebAccountManagement) sample, which shows you how to consume providers, but it misses the intricate how to write a [WebAccountProvider](https://msdn.microsoft.com/en-us/library/windows/apps/windows.security.credentials.webaccountprovider.aspx), which is what this sample demonstrates. 
 
-Enough chat, let's get to the code. 
+
+
+##Running the sample
+To run the client sample:
+1. Open Saso.SampleProvider.sln 
+2. Compile all projects 
+3. Deploy Saso.SampleProvider and Saso.SampleProvider.Client 
+4. Run the .Client app 
+5. Click the "Invoke Login UI" button.  
+This will show you the login UI from the provider (it is in Saso.SampleProvider.SampleUI.RequestTokenPage.xaml). 
+Note: if you see the XAML, you will see more UI elements, the sample client app passes a parameter called "simpleUI" that hides options in the login page. Read all the implementation details below if you want to try the full UI.  
+   
+6. Once you have signed in once in the client, you can click on the "Retrieve Token Silently" button from the client app.  If this was a different app, since the account provider logged in at system level, the second app could retrieve the token silently even without logging in.
+7. Finally, if you want to try calling from a website into the provider, navigate to https://paxwaptest.azurewebsites.net
+When you arrive, you should see no cookies. 
+Click submit to call into the provider. This shall create cookies for the site. 
+Refresh the site and you should see the cookies now! You have the system's AdvertiserId. 
+Notes: 
+-To pass information from the website into the provider, just include it in the query string.
+-This is a test server, pending when you read this, it might be taken down. If you can't find it, you will need to use your own website, which means reconfiguring the provider in the _package.appxmanifest_ declaration, the _Constants.cs_ file for provider, _MainPage.xaml.cs_ for the client, and the _default.html_ file for the website. Global search in Visual studio is your friend.       
+
+Those are the steps, let's now walk through how it works. 
+
+## Implementation details 
 
 To leverage the WebAccountManager infrastructure, you just need to follow these steps: : 
 
@@ -49,5 +72,12 @@ The next item to explain from our sample is how to leverage the WebAccountManage
 3. You can also call from the web (IE and Edge) using the tbauth:// protocol handler. By just invoking it with your provider's id, the background service is called and you can pass information from the web into your provider using the query string parameters for the call.  You can also return information by pushing cookies to the web. 
 
 
+TIP: The easiest way to see it all in action is to step through the debugger. Here is one (of many ways) to do it: 
 
-[09/29/2016. More details coming soon. Interim, play with the code. There is plenty of docs on the interesting points]
+
+1. Right-click on Saso.Provider project and select _Properties_ menu item.  
+2. Click on the _Debug_ tab
+3. Check the _Do not launch, but debug my code when it starts_ option
+4. Press _F5_ or _Debug->Start Debugging_  
+5. Set break points in Saso.SampleProvider's App.xaml.cs constructor and the _Run_ method in Saso.SampleProvider.BackgroundService.MainTask 
+
