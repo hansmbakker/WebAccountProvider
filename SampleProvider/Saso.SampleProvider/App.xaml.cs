@@ -83,26 +83,6 @@ namespace Saso.SampleProvider
             }
         }
 
-
-        public static void RegisterBackgroundTask()
-        {
-            var bgTaskName = "DefaultSignInAccountChangeTask";
-
-            foreach (var task in BackgroundTaskRegistration.AllTasks)
-            {
-                if (task.Value.Name == bgTaskName)
-                {
-                    task.Value.Unregister(true);
-                }
-            }
-
-            var builder = new BackgroundTaskBuilder();
-            builder.Name = bgTaskName;
-            builder.TaskEntryPoint = "Background.DefaultSignInAccountChangeTask";
-            builder.SetTrigger(new SystemTrigger(SystemTriggerType.DefaultSignInAccountChange, false));
-            BackgroundTaskRegistration bgTaskReg = builder.Register();
-        }
-
         /// <summary>
         /// Invoked when Navigation to a certain page fails
         /// </summary>
