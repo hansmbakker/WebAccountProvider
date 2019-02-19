@@ -11,6 +11,7 @@ using Windows.Security.Authentication.Web.Core;
 using Windows.Security.Authentication.Web.Provider;
 using Windows.Security.Credentials;
 using Windows.Web.Http;
+using Trace = Saso.SampleProviders.Helpers.Trace;
 
 namespace Saso.SampleProvider.BackgroundService
 {

@@ -29,50 +29,50 @@ namespace Saso.SampleProvider.SampleUI
     {
         WebAccount account;
         IWebAccountProviderOperation operation;
-        CommonBaseOperation commonOperation; 
+        CommonBaseOperation commonOperation;
         public ManageAccountPage()
         {
             this.InitializeComponent();
             this.Loaded += ManageAccountPage_Loaded;
         }
 
-      
+
         private void ManageAccountPage_Loaded(object sender, RoutedEventArgs e)
         {
             if (commonOperation.NeedsAccount && commonOperation.Account == null)
-                commonOperation.ReportCompleted(); 
-             
-            userName.Text = commonOperation.Account.UserName ;
-            accountId.Text = commonOperation.Account.Id; 
+                commonOperation.ReportCompleted();
+
+            userName.Text = commonOperation.Account.UserName;
+            accountId.Text = commonOperation.Account.Id;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
             operation = e.Parameter as IWebAccountProviderOperation;
-                Debug.Assert(operation != null);
-            commonOperation = new CommonBaseOperation(operation);  
-             
+            Debug.Assert(operation != null);
+            commonOperation = new CommonBaseOperation(operation);
+
         }
         private async void deleteButton_Click(object sender, RoutedEventArgs e)
         {
-            await WebAccountManager.DeleteWebAccountAsync(commonOperation.Account ); 
-            commonOperation.ReportCompleted(); 
+            await WebAccountManager.DeleteWebAccountAsync(commonOperation.Account);
+            commonOperation.ReportCompleted();
         }
 
         private void cancelButton_Click(object sender, RoutedEventArgs e)
         {
-            
+
             commonOperation.ReportCompleted();
-            Frame frame = Window.Current.Content as Frame; 
-            if ( frame != null  && frame.CanGoBack )
+            Frame frame = Window.Current.Content as Frame;
+            if (frame != null && frame.CanGoBack)
             {
-                frame.GoBack(); 
+                frame.GoBack();
             }
             else
             {
                 Windows.UI.Popups.MessageDialog dlg = new Windows.UI.Popups.MessageDialog("To exit, please close window on top right");
-                dlg.ShowAsync(); 
+                dlg.ShowAsync();
             }
         }
 
@@ -85,12 +85,12 @@ namespace Saso.SampleProvider.SampleUI
         private void retrieveCookiesButton_Click(object sender, RoutedEventArgs e)
         {
             WebAccountProviderRetrieveCookiesOperation retrieve = operation as WebAccountProviderRetrieveCookiesOperation;
-            StringBuilder builder = new StringBuilder(); 
-            foreach ( var cookie in retrieve.Cookies )
+            StringBuilder builder = new StringBuilder();
+            foreach (var cookie in retrieve.Cookies)
             {
-                builder.Append($"Name: {cookie.Name}, Domain: {cookie.Domain}, Value={cookie.Value}\n\r");    
+                builder.Append($"Name: {cookie.Name}, Domain: {cookie.Domain}, Value={cookie.Value}\n\r");
             }
-            cookies.Text = builder.ToString(); 
+            cookies.Text = builder.ToString();
         }
 
     }

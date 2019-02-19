@@ -270,7 +270,7 @@ namespace Saso.SampleProvider.SampleUI
 
         private void cancelButton_Click(object sender, RoutedEventArgs e)
         {
-
+            Window.Current.Close();
         }
 
      

@@ -55,7 +55,7 @@
 
         <StackPanel Orientation="Horizontal" Grid.Row="8" Grid.ColumnSpan="2" >
             <Button x:Name="deleteButton" Content="Delete" Click="deleteButton_Click" Style="{StaticResource VerticalItem}"/>
-            <Button x:Name="updateButton" Content="Cancel" Click="updateButton_Click" Style="{StaticResource VerticalItem}"/>
+            <Button x:Name="updateButton" Content="Update" Click="updateButton_Click" Style="{StaticResource VerticalItem}"/>
             <Button x:Name="cancelButton" Content="Cancel" Click="cancelButton_Click" Style="{StaticResource VerticalItem}"/>             
         </StackPanel>
 
