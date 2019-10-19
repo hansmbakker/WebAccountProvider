@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29411.138
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saso.SampleProvider", "Saso.SampleProvider\Saso.SampleProvider.csproj", "{F482AF03-0E2C-45F5-B126-C1F5963F0B10}"
 EndProject
@@ -10,6 +10,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saso.SampleProviders.Helpers", "Saso.SampleProviders.Helpers\Saso.SampleProviders.Helpers.csproj", "{160A8964-C0F8-481D-999C-40E11CACF960}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saso.SampleProvider.Client", "Saso.SampleProvider.Client\Saso.SampleProvider.Client.csproj", "{DEEAA925-F99E-4B76-9A5A-C75BB4916E6B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1D2D580F-AF0F-47BD-9577-211937868A86}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -102,5 +107,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {59A7770E-A7B6-4676-B12F-5B37B9A752AC}
 	EndGlobalSection
 EndGlobal
